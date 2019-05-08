@@ -13,10 +13,6 @@ This project involves 2 parts: a web UI and a backend.
 
 The web UI will parse users' queries, then trigger correct intent, which will then handled by backend, generating proper response.
 
-## How to use
-
-This project involves 2 parts: Alexa Skill and a backend
-
 ### Backend Setups
 
 #### Install Dependency
