@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Movie Search Engine</title>
+
+    <!-- Favicons -->
+    <link href="../static/img/favicon.png" rel="icon">
+    <link href="../static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <link href="https://fonts.googleapis.com/css?family=Oswald:400,300,700|EB+Garamond" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/index_style.css">
+  </head>
+
+  <body>
+    <div class="content">
+      <div class="container">
+        <div class="row">
+          <div class="logo text-center">
+            <h1 class="search-caption">SEARCH A MOVIE</h1>
+          </div>
+        </div>
+      </div>
+
+        <div id="results" class="result-info">
+            <h2 class="subs-title">Similar Movies to: <span class="data-in-row">{{ target_movie }}</span></h2>
+            <h2 class="subs-title">Total Similar Movies: <span class="data-in-row">{{ total_hits }}</span></h2>
+            {% if skipped_words != []: %}
+              <h2 class="subs-title">Ignoring stopword(s): 
+                {% for term in skipped_words %}
+                  <span class="data-in-row">{{ term }}</span>
+                {% endfor %}
+              </h2>
+            {% endif %}
+            {% if unknown_terms != [] %}
+              <h2 class="subs-title">Unknown word(s):
+                {% for term in unknown_terms %}
+                  <span class="data-in-row">{{ term }}</span>
+                {% endfor %}
+              </h2>
+            {% endif %}
+            <h2 class="subs-title">Query: <span class="data-in-row">{{ orig_query }}</span></h2>
+            <div class="list-group">
+                {% for film in movie_results %}
+                  <a href="/movie/{{ film['id'] }}" target="_blank" class="list-group-item">
+                      
+                    <h4 class="list-group-item-heading film-header">TITLE: <span class="data-in-row">{{ film.title }}</span></h4>
+                    
+                    {% if film.director %}
+                      <h4 class="list-group-item-heading film-header">DIRECTOR(s): 
+                        {% for director in film.director %}
+                          <span class="data-in-row">{{ director }}</span>
+                        {% endfor %}
+                      </h4>
+                    {% endif %}
+
+                    {% if film.location %}
+                      <h4 class="list-group-item-heading film-header">LOCATION(s):
+                        {% for location in film.location %}
+                          <span class="data-in-row">{{ location }}</span>
+                        {% endfor %}
+                      </h4>
+                    {% endif %}
+
+                    {% if film.starring %}
+                      <h4 class="list-group-item-heading film-header">STARRING(s):
+                        {% for starring in film.starring %}
+                          <span class="data-in-row">{{ starring }}</span>
+                        {% endfor %}
+                      </h4>
+                    {% endif %}
+
+                    <h4 class="list-group-item-heading film-header">SIMILARITY:
+                      <span class="data-in-row">{{ film.similarity }}</span>
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">SUMMARY(s):
+                      <span class="data-in-row">{{ film.snippet }}</span>
+                    </h4>
+
+                    {% if film.included %}
+                      <h4 class="list-group-item-heading film-header">INCLUDED QUERY TERM(s):
+                        {% for word in film.included %}
+                          <span class="data-in-row">{{ word }}</span>
+                        {% endfor %}
+                      </h4>
+                    {% endif %}
+
+                  </a>
+
+                  <a href="/similar/{{ film['id'] }}?query={{ orig_query }}" target="_blank" class="find-similar-btn btn-info">MORE LIKE THIS</a>
+
+                {% endfor %}
+            </div>
+            
+            {% if total_hits >= 10 %}
+            <nav aria-label="Page navigation">
+              <form action="/similar/{{ orig_id }}?query={{ orig_query }}" method="get" class="pagination">
+                {% for i in range(pages) %}
+                  <li>
+                    {% if page_num == i %}
+                      <input type="submit" class="btm-page-btn btn btn-info" name="page_num" value="{{ i + 1 }}">
+                    {% else %}
+                      <input type="submit" class="btm-page-btn btn btn-default" name="page_num" value="{{ i + 1 }}">
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </form>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="../static/js/custom.js"></script>
+
+  </body>
+
+</html>

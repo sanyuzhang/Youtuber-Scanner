@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ data.title }}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <!-- Favicons -->
+    <link href="../static/img/favicon.png" rel="icon">
+    <link href="../static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Oswald:400,300,700|EB+Garamond" rel="stylesheet">
+
+    <!-- Bootstrap CSS File -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Libraries CSS Files -->
+    <link href="../static/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Main Stylesheet File -->
+    <link href="../static/css/detail_style.css" rel="stylesheet">
+
+  </head>
+
+  <body data-spy="scroll" data-offset="0" data-target="#theMenu">
+
+    <div id="headerwrap">
+      <div class="container">
+        <div class="row">
+          
+          <h1>{{ data.title }}</h1>
+          <br>
+          
+          <h3>DIRECTOR:
+          {% for director in data.director %}
+          <span class="data-in-row">{{ director }}</span>
+          {% endfor %}
+          </h3>
+
+          {% if data.location %}
+            <h3>LOCATION:
+              {% for location in data.location %}
+              <span class="data-in-row">{{ location }}</span>
+              {% endfor %}
+            </h3>
+          {% endif %}
+          
+          <h3>COUNTRY:
+          {% for country in data.country %}
+          <span class="data-in-row">{{ country }}</span>
+          {% endfor %}
+          </h3>
+
+          <h3>STARRING:
+          {% for starring in data.starring %}
+          <span class="data-in-row">{{ starring }}</span>
+          {% endfor %}
+          </h3>
+
+        </div>
+      </div>
+      <!-- /container -->
+    </div>
+    <!-- /headerwrap -->
+
+    <div id="f">
+      <div class="container">
+        <div class="row">
+          
+          <h3>Description</h3>
+          <p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
+
+          <div class="col-lg-8 col-lg-offset-2">
+            <p class="movie-description">{{ data.text }}</p>
+          </div>
+
+        </div>
+      </div>
+      <!-- /container -->
+    </div>
+    <!-- /f -->
+
+    <!-- JavaScript Libraries -->
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
