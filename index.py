@@ -3,7 +3,7 @@ import re
 import time
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
-from elasticsearch_dsl import Index, Document, Text, Keyword, Integer
+from elasticsearch_dsl import Index, Document, Text, Keyword, Integer, Double, Date
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.analysis import tokenizer, analyzer
 from elasticsearch_dsl.query import MultiMatch, Match
@@ -31,83 +31,80 @@ name_analyzer = analyzer(
 # Define document mapping (schema) by defining a class as a subclass of Document.
 # This defines fields and their properties (type and analysis applied).
 # You can use existing es analyzers or use ones you define yourself as above.
+class Channel(Document):
+    channel_title = Text(analyzer=name_analyzer)
+    channel_desc = Text(analyzer=text_analyzer)
 
+    all_playlists_titles = Text(analyzer=text_analyzer)
+    all_playlists_desc = Text(analyzer=text_analyzer)
 
-class Movie(Document):
-    title = Text(analyzer=text_analyzer)
-    text = Text(analyzer=text_analyzer)
-    language = Text(analyzer=name_analyzer)
-    country = Text(analyzer=name_analyzer)
-    director = Text(analyzer=name_analyzer)
-    location = Text(analyzer=name_analyzer)
-    starring = Text(analyzer=name_analyzer)
-    time = Text(analyzer=text_analyzer)
-    runtime = Integer()
+    all_videos_titles = Text(analyzer=text_analyzer)
+    all_videos_desc = Text(analyzer=text_analyzer)
+
+    upload_interval = Double()
+    view_count = Integer()
+    video_count = Integer()
+    subscriber_count = Integer()
+
+    channel_create_date = Date()
+    latest_upload_datetime = Date()
+
     categories = Text(analyzer=text_analyzer)
 
     # override the Document save method to include subclass field definitions
     def save(self, *args, **kwargs):
-        return super(Movie, self).save(*args, **kwargs)
+        return super(Channel, self).save(*args, **kwargs)
+
 
 # Populate the index
-
-
 def buildIndex():
     """
-    buildIndex creates a new film index, deleting any existing index of
+    buildIndex creates a new channel index, deleting any existing index of
     the same name.
-    It loads a json file containing the movie corpus and does bulk loading
+    It loads a json file containing the channel corpus and does bulk loading
     using a generator function.
     """
-    film_index = Index('sample_film_index')
-    if film_index.exists():
-        film_index.delete()  # Overwrite any previous version
-    film_index.document(Movie)
-    film_index.create()
+    channel_index = Index('channel_index')
+    if channel_index.exists():
+        channel_index.delete()  # Overwrite any previous version
+    channel_index.document(Channel)
+    channel_index.create()
 
-    # Open the json film corpus
-    with open('films_corpus.json', 'r', encoding='utf-8') as data_file:
-        # load movies from json file into dictionary
-        movies = json.load(data_file)
-        size = len(movies)
+    # Open the json channel corpus
+    with open('data/channels.json', 'r', encoding='utf-8') as data_file:
+        # load channels from json file into dictionary
+        channels = json.load(data_file)
 
     # Action series for bulk loading with helpers.bulk function.
-    # Implemented as a generator, to return one movie with each call.
+    # Implemented as a generator, to return one channel with each call.
     # Note that we include the index name here.
     # The Document type is always 'doc'.
     # Every item to be indexed must have a unique key.
     def actions():
-        # mid is movie id (used as key into movies dictionary)
-        for mid in range(1, size + 1):
-            id = str(mid)
+        # cid is channel id (used as key into channels dictionary)
+        for cid in channels:
             yield {
-                "_index": "sample_film_index",
+                "_index": "channel_index",
                 "_type": 'doc',
-                "_id": mid,
-                "title": movies[id]['Title'],
-                "text": movies[id]['Text'],
-                "language": movies[id]['Language'],
-                "country": movies[id]['Country'],
-                "director": movies[id]['Director'],
-                "location": movies[id]['Location'],
-                "starring": movies[id]['Starring'],
-                "time": movies[id]['Time'],
-                "runtime": getRuntimeInMin(movies[id]['Running Time']),
-                "categories": movies[id]['Categories']
+                "_id": cid,
+                "channel_title": channels[cid]['channel_title'],
+                "channel_desc": channels[cid]['channel_desc'],
+                "all_playlists_titles": channels[cid]['all_playlists_titles'],
+                "all_playlists_desc": channels[cid]['all_playlists_desc'],
+                "all_videos_titles": channels[cid]['all_videos_titles'],
+                "all_videos_desc": channels[cid]['all_videos_desc'],
+                "upload_interval": channels[cid]['upload_interval'],
+                "view_count": channels[cid]['view_count'],
+                "video_count": channels[cid]['video_count'],
+                "subscriber_count": channels[cid]['subscriber_count'],
+                "channel_create_date": channels[cid]['channel_create_date'],
+                "latest_upload_datetime": channels[cid]['latest_upload_datetime'],
+                "categories": channels[cid]['categories']
             }
     helpers.bulk(es, actions())
 
 
-def getRuntimeInMin(runtime):
-    # movies[str(mid)]['runtime'] # You would like to convert runtime to integer (in minutes)
-    if type(runtime) is int:
-        return runtime
-    else:
-        return 0
-
 # command line invocation builds index and prints the running time.
-
-
 def main():
     start_time = time.time()
     buildIndex()
