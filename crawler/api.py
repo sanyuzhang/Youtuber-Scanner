@@ -8,15 +8,6 @@ import os
 import re
 
 
-def get_date_by_offset(date, offset):
-    """
-    Return the string of a date, which is @offset days from @date.
-    """
-    date = datetime.datetime.strptime(date, "%Y-%m-%d")
-    target = date + datetime.timedelta(days=offset)
-    return target.strftime("%Y-%m-%d")
-
-
 def get_channels():
     """
     Get channel json data through Youtube APIs
@@ -32,6 +23,7 @@ def get_channels():
             channel = get_channels_by_user(user)
         if channel is not None:
             channels.update(channel)
+        print('Corpus Extraction Done -', line)
     f.close()
     write_to_file(channels)
 
@@ -72,13 +64,16 @@ def generate_json_data(response):
     all_upload_datetimes.sort()
     latest_upload_datetime = all_upload_datetimes[-1]
     upload_interval = get_upload_interval(all_upload_datetimes)
+    channel_create_date = datetime.datetime.strptime(
+        response['items'][0]['snippet']['publishedAt'], "%Y-%m-%dT%H:%M:%S.%fZ")
+    channel_create_date = channel_create_date.strftime("%Y-%m-%d %H:%M:%S")
 
     channel = {
         channel_id: {
             "channel_id": channel_id,
             "channel_title": response['items'][0]['snippet']['title'],
             "channel_desc": response['items'][0]['snippet']['description'],
-            "channel_create_date": response['items'][0]['snippet']['publishedAt'],
+            "channel_create_date": channel_create_date,
             "channel_url": CHANNEL_URL_PREFIX + response['items'][0]['id'],
             "view_count": int(response['items'][0]['statistics']['viewCount']),
             "video_count": int(response['items'][0]['statistics']['videoCount']),
@@ -172,7 +167,7 @@ def write_to_file(data):
     Write the json data to a file.
     """
     output = json.dumps(data, indent=4)
-    file = open(CHANNELS_CORPUS, 'w')
+    file = open(CHANNELS_CORPUS, 'w+')
     file.write(output)
     file.close()
 
