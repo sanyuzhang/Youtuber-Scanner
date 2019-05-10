@@ -19,7 +19,7 @@ Each youtuber's channel data will be composed of structured data and unstructure
 ```
 {
     "UC1zZE_kJ8rQHgLTVfobLi_g": {
-        "channel_create_date": "2010-01-04T03:15:19.000Z", 
+        "channel_create_date": "2010-01-04 03:15:19", 
         "view_count": 2306511170, 
         "video_count": 908, 
         "channel_title": "The King of Random", 
@@ -57,7 +57,7 @@ virtualenv ENV
 source ENV\bin\activate
 
 # Install packages by typing
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ### Run
@@ -65,6 +65,7 @@ pip install -r requirements.txt
 To run backend:
 1. Enable the correct python virtual env
 2. Start Elastic Search Server
-2. `python backend/main.py`
+3. `python3 index.py`
+4. `python3 main.py`
 
 A flask server will run on port 5555.
