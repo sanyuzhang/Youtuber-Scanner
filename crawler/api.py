@@ -22,7 +22,7 @@ def get_channels():
             user = line.split('/user/')[1]
             channel = get_channels_by_user(user)
         if channel is not None:
-            channels.update(channel)
+            channels[channel['channel_id']] = channel
         print('Corpus Extraction Done -', line)
     f.close()
     write_to_file(channels)
@@ -167,7 +167,7 @@ def write_to_file(data):
     Write the json data to a file.
     """
     output = json.dumps(data, indent=4)
-    file = open(CHANNELS_CORPUS, 'w+')
+    file = open(CHANNELS_CORPUS, 'w')
     file.write(output)
     file.close()
 
