@@ -54,7 +54,7 @@ Youtuber's channels data will be composed of structured data and unstructured da
 
 ```bash
 # install virtualenv to easily manage python versions
-pip install virtualenv 
+pip3 install virtualenv 
 
 # Create your own ENV like
 virtualenv ENV
