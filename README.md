@@ -15,7 +15,7 @@ The web UI will parse users' queries, then trigger correct intent, which will th
 
 ## Data
 
-Each youtuber's channel data will be composed of structured data and unstructured data like:
+Youtuber's channels data will be composed of structured data and unstructured data like:
 ```
 {
     "UC1zZE_kJ8rQHgLTVfobLi_g": {
@@ -38,7 +38,13 @@ Each youtuber's channel data will be composed of structured data and unstructure
             "https://en.wikipedia.org/wiki/Food"
         ], 
         "all_videos_titles": "10 Things You Should Make This Weekend\n| Rewind #1 10 Things You Can Make At Home | Rewind #2 10 EASY DIY Projects | Rewind #3 Electric Pickles and Vacuum Slime | Rewind #4 Glass Bottle Arrowheads & Breathing Fire | Rewind #5  Glow Oobleck Monster Mosh Pit Magnetic Slime Swallowing Monster Magnets DIY Unicorn Snot Shooting Slime with the Flamethrower Slime In a Vacuum Chamber  DIY Dry Ice Soda Slushies How To Make RAINBOW Instant Ice! Mixing Dry Ice with Molten Salt The Ice Experiments: Molten Brass Deep Frying Dry Ice  When Molten Salt Hits Molten Metal The Ice Experiments: Molten Copper The Ice Experiments: Molten Fidget Spinners The Ice "
-    }
+    },
+    "UC1zZE_kJ8rQHgLTVfobLi_g": {
+        "channel_create_date": "2010-01-04 03:15:19", 
+        "view_count": 2306511170, 
+        ...
+    },
+    ...
 }
 ```
 
