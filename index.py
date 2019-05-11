@@ -33,6 +33,8 @@ name_analyzer = analyzer(
 # Define document mapping (schema) by defining a class as a subclass of Document.
 # This defines fields and their properties (type and analysis applied).
 # You can use existing es analyzers or use ones you define yourself as above.
+
+
 class Channel(Document):
     channel_title = Text(analyzer=name_analyzer)
     channel_desc = Text(analyzer=text_analyzer)
@@ -51,7 +53,9 @@ class Channel(Document):
     channel_create_date = Date()
     latest_upload_datetime = Date()
 
-    categories = Text(analyzer=text_analyzer)
+    categories = Text(analyzer=name_analyzer)
+    image_url = Keyword()
+    channel_url = Keyword()
 
     # override the Document save method to include subclass field definitions
     def save(self, *args, **kwargs):
@@ -102,11 +106,23 @@ def buildIndex():
                 "subscriber_count": channels[cid]['subscriber_count'],
                 "channel_create_date": channels[cid]['channel_create_date'],
                 "latest_upload_datetime": channels[cid]['latest_upload_datetime'],
-                "categories": channels[cid]['categories']
+                "categories": get_categories(channels[cid]['categories']),
+                "channel_url": channels[cid]['channel_url'],
+                "image_url": channels[cid]['image_url']
             }
-        
+
     helpers.bulk(es, actions())
 
+
+def get_categories(categories):
+    """
+    Parse raw category urls and return category in string array
+    """
+    cates = list()
+    for category in categories:
+        if 'wiki/'in category:
+            cates.append(category.split('wiki/')[1])
+    return cates
 
 
 # command line invocation builds index and prints the running time.
