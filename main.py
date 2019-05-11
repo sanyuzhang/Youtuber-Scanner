@@ -114,7 +114,7 @@ def results():
     if not_found is False:
         if len(upload_interval) > 0:
             s = s.query('range', upload_interval={
-                        'lte': float(upload_interval)})
+                        'lt': float(upload_interval)})
             if s.count() == 0:
                 not_found = True
                 unknown_upload_interval = upload_interval
@@ -129,8 +129,18 @@ def results():
     # insert data into response
     result_list = {}
     for hit in response.hits:
-        result = hit
+        result = {}
         result['score'] = hit.meta.score
+        result['channel_title'] = hit.channel_title
+        result['channel_desc'] = hit.channel_desc
+        result['view_count'] = hit.view_count
+        result['video_count'] = hit.video_count
+        result['subscriber_count'] = hit.subscriber_count
+        result['channel_create_date'] = hit.channel_create_date
+        result['latest_upload_datetime'] = hit.latest_upload_datetime
+        result['categories'] = hit.categories
+        result['channel_url'] = hit.channel_url
+        result['image_url'] = hit.image_url
         result['upload_interval'] = round(hit.upload_interval, 1)
         result_list[hit.meta.id] = result
 
@@ -142,18 +152,16 @@ def results():
 
     # if we find the results, extract title and text information from doc_data, else do nothing
     if result_num > 0:
-        return render_template('index.html', is_result=True, results=result_list, res_num=result_num, pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query, orig_channel_title=channel_title, orig_upload_interval=upload_interval, ignored=ignored)
+        return render_template(
+            'index.html', is_result=True, results=result_list, res_num=result_num,
+            pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query,
+            orig_channel_title=channel_title, orig_upload_interval=upload_interval, ignored=ignored)
     else:
-        message = []
-        if len(unknown_query) > 0:
-            message.append('Unknown keyword: ' + unknown_query)
-        if len(unknown_channel_title) > 0:
-            message.append('Unknown youtuber: ' + unknown_channel_title)
-        if len(unknown_upload_interval) > 0:
-            message.append(
-                'Cannot find youtubers uploading video every %d days' % unknown_channel_title)
-
-        return render_template('index.html', is_result=True, results=message, res_num=0, pages_num=0, page_id_id=0, orig_query=query, orig_channel_title=channel_title, orig_upload_interval=upload_interval, ignored=ignored)
+        return render_template(
+            'index.html', is_result=True, res_num=0, pages_num=0, page_id_id=0,
+            orig_query=query, orig_channel_title=channel_title, orig_upload_interval=upload_interval,
+            ignored=ignored, unknown_query=unknown_query, unknown_channel_title=unknown_channel_title,
+            unknown_upload_interval=unknown_upload_interval)
 
 
 # display a particular document given a result number
@@ -161,18 +169,7 @@ def results():
 def documents(res):
     global gresults
     channel = gresults[res]
-    channel_title = channel['channel_title']
-    for term in channel:
-        if type(channel[term]) is AttrList:
-            s = "\n"
-            for item in channel[term]:
-                s += item + ",\n "
-            channel[term] = s
-    # fetch the channel from the elasticsearch index using its id
-    ch = Channel.get(id=res, index='channel_index')
-    channel_dict = ch.to_dict()
-    channel['upload_interval'] = str(channel_dict['upload_interval']) + " days"
-    return render_template('detail.html', channel=channel, title=channel_title)
+    return render_template('detail.html', channel=channel)
 
 
 def get_page_id(request):
