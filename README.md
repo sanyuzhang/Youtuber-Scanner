@@ -78,5 +78,6 @@ To run backend:
 2. `sudo -i service elasticsearch start`
 3. `python3 index.py`
 4. `python3 main.py`
+5. Open your browser and go to http://127.0.0.1:5000
 
 A flask server will run on port 5000.
