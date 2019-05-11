@@ -15,6 +15,9 @@ The web UI will parse users' queries, then trigger correct intent, which will th
 
 ## Data
 
+Channels corpus data is too large to push to Github.
+Therefore, please download the corpus data here - https://drive.google.com/file/d/1J4YLH-R20ZAW7mTqAi7Wo7szSbhWqgZ2/view?usp=sharing
+
 Youtuber's channels data will be composed of structured data and unstructured data like:
 ```
 {
