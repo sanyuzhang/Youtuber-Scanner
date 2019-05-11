@@ -79,4 +79,4 @@ To run backend:
 3. `python3 index.py`
 4. `python3 main.py`
 
-A flask server will run on port 5555.
+A flask server will run on port 5000.
