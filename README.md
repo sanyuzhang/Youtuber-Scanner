@@ -75,7 +75,7 @@ pip3 install -r requirements.txt
 
 To run backend:
 1. Enable the correct python virtual env
-2. Start Elastic Search Server
+2. `sudo -i service elasticsearch start`
 3. `python3 index.py`
 4. `python3 main.py`
 
