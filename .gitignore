@@ -115,3 +115,6 @@ dmypy.json
 
 # VirualEnv
 /engine
+
+# Corpus Data
+data/channels.json
