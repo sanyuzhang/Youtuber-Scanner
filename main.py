@@ -88,7 +88,7 @@ def results():
     if not_found is False:
         phrases = re.findall(r'"(.*?)"', query)
         for p in phrases:
-            s = s.query(Q("multi_match", query=p.lower(), fields=['title'], type='phrase', boost=10)
+            s = s.query(Q("multi_match", query=p.lower(), fields=['channel_title'], type='phrase', boost=10)
                         | Q("multi_match", query=p.lower(), fields=['channel_desc'], type='most_fields', boost=9)
                         | Q("multi_match", query=p.lower(), fields=['all_playlists_titles'], type='most_fields', boost=6)
                         | Q("multi_match", query=p.lower(), fields=['all_playlists_desc'], type='most_fields', boost=5)
