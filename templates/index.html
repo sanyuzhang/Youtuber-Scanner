@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Movie Search Engine</title>
+    <title>Youtuber Scanner</title>
 
     <!-- Favicons -->
     <link href="../static/img/favicon.png" rel="icon">
@@ -21,12 +21,14 @@
       <div class="container">
         <div class="row">
           <div class="logo text-center">
-            <h1 class="search-caption">SEARCH A MOVIE</h1>
+            <h1 class="search-caption">SEARCH A YOUTUBER</h1>
           </div>
 
           <div class="subcription-info text-center">
-            <form class="subscribe_form" action="/search" method="post">
-              <input required="" value="{{ orig_query }}" placeholder="Enter a movie name or sth..." id="query" name="query" type="text">
+            <form class="subscribe_form" action="/results" method="post">
+              <input required="" value="{{ orig_query }}" placeholder="Enter a keyword or sth ..." id="query" name="query" type="text">
+              <input value="{{ orig_channel_title }}" placeholder="Search a youtuber's name ..." id="channel_title" name="channel_title" type="text">
+              <input value="{{ orig_upload_interval }}" placeholder="Upload interval ..." id="upload_interval" name="upload_interval" type="number">
               <input class="subscribe" name="search" value="SEARCH" type="submit">
             </form>
           </div>
@@ -35,14 +37,14 @@
 
       {% if is_result == True: %}
         <div id="results" class="result-info">
-            {% if skipped_words != []: %}
+            {% if ignored %}
               <h2 class="subs-title">Ignoring stopword(s): 
-                {% for term in skipped_words %}
+                {% for term in ignored %}
                   <span class="data-in-row">{{ term }}</span>
                 {% endfor %}
               </h2>
             {% endif %}
-            {% if unknown_terms != [] %}
+            {% if unknown_terms %}
               <h2 class="subs-title">Unknown word(s):
                 {% for term in unknown_terms %}
                   <span class="data-in-row">{{ term }}</span>
@@ -50,70 +52,73 @@
               </h2>
             {% endif %}
             
-            <h2 class="subs-title">Total hits: <span class="data-in-row">{{ total_hits }}</span></h2>
+            <h2 class="subs-title">Total hits: <span class="data-in-row">{{ res_num }}</span></h2>
             <div class="list-group">
-                {% for film in movie_results %}
-                  <a href="/movie/{{ film['id'] }}" target="_blank" class="list-group-item">
+                {% for res in results %}
+                  <a href="/documents/{{ res }}" target="_blank" class="list-group-item">
+
+                    <img src="{{ results[res]['image_url'] }}" class="avartar">
                       
-                    <h4 class="list-group-item-heading film-header">TITLE: <span class="data-in-row">{{ film.title }}</span></h4>
-                    
-                    {% if film.director %}
-                      <h4 class="list-group-item-heading film-header">DIRECTOR(s): 
-                        {% for director in film.director %}
-                          <span class="data-in-row">{{ director }}</span>
-                        {% endfor %}
-                      </h4>
-                    {% endif %}
+                    <h4 class="list-group-item-heading film-header">TITLE: <span class="data-in-row">{{ results[res]['channel_title'] }}</span></h4>
 
-                    {% if film.location %}
-                      <h4 class="list-group-item-heading film-header">LOCATION(s):
-                        {% for location in film.location %}
-                          <span class="data-in-row">{{ location }}</span>
-                        {% endfor %}
-                      </h4>
-                    {% endif %}
-
-                    {% if film.starring %}
-                      <h4 class="list-group-item-heading film-header">STARRING(s):
-                        {% for starring in film.starring %}
-                          <span class="data-in-row">{{ starring }}</span>
-                        {% endfor %}
-                      </h4>
-                    {% endif %}
-
-                    <h4 class="list-group-item-heading film-header">SIMILARITY:
-                      <span class="data-in-row">{{ film.similarity }}</span>
+                    <h4 class="list-group-item-heading film-header">SCORE:
+                      <span class="data-in-row">{{ results[res]['score'] }}</span>
                     </h4>
 
-                    <h4 class="list-group-item-heading film-header">SUMMARY(s):
-                      <span class="data-in-row">{{ film.snippet }}</span>
+                    <h4 class="list-group-item-heading film-header">VIDEO COUNTS:
+                      <span class="data-in-row">{{ results[res]['video_count'] }}</span>
                     </h4>
 
-                    {% if film.missing %}
-                      <h4 class="list-group-item-heading film-header">MISSING TERM(s):
-                        {% for missing in film.missing %}
-                          <span class="data-in-row missing-words">{{ missing }}</span>
-                        {% endfor %}
-                      </h4>
-                    {% endif %}
+                    <h4 class="list-group-item-heading film-header">VIEW COUNTS:
+                      <span class="data-in-row">{{ results[res]['view_count'] }}</span>
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">SUBSCRIBER COUNTS:
+                      <span class="data-in-row">{{ results[res]['subscriber_count'] }}</span>
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">LAST UPLOAD DATE:
+                      <span class="data-in-row">{{ results[res]['latest_upload_datetime'] }}</span>
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">CHANNEL CREATED DATE:
+                      <span class="data-in-row">{{ results[res]['channel_create_date'] }}</span>
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">UPLOAD INTERVAL:
+                      <span class="data-in-row">Every {{ results[res]['upload_interval'] }} days</span>
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">CATEGORIES:
+                      {% for category in results[res]['categories'] %}
+                        <span class="data-in-row">{{ category }}</span>
+                      {% endfor %}
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">CHANNEL URL: 
+                      <span class="data-in-row">{{ results[res]['channel_url'] }}</span>
+                    </h4>
+
+                    <h4 class="list-group-item-heading film-header">DESCRIPTION:
+                      <span class="data-in-row">{{ results[res]['channel_desc'] }}</span>
+                    </h4>
                   
                   </a>
-
-                  <a href="/similar/{{ film['id'] }}?query={{ orig_query }}" target="_blank" class="find-similar-btn btn-info">MORE LIKE THIS</a>
-
                 {% endfor %}
             </div>
             
-            {% if total_hits >= 10 %}
+            {% if res_num >= 10 %}
             <nav aria-label="Page navigation">
-              <form action="/search" method="post" class="pagination">
-                <input type="hidden" name="query", value="{{ orig_query }}">
-                {% for i in range(pages) %}
+              <form action="/results" method="post" class="pagination">
+                <input type="hidden" name="query" value="{{ orig_query }}">
+                <input type="hidden" value="{{ orig_channel_title }}" name="channel_title">
+                <input type="hidden" value="{{ orig_upload_interval }}" name="upload_interval">
+                {% for i in range(1, pages_num) %}
                   <li>
-                    {% if page_num == i %}
-                      <input type="submit" class="btm-page-btn btn btn-info" name="page_num" value="{{ i + 1 }}">
+                    {% if page_id == i %}
+                      <input type="submit" class="btm-page-btn btn btn-info" name="page_id" value="{{ i }}">
                     {% else %}
-                      <input type="submit" class="btm-page-btn btn btn-default" name="page_num" value="{{ i + 1 }}">
+                      <input type="submit" class="btm-page-btn btn btn-default" name="page_id" value="{{ i }}">
                     {% endif %}
                   </li>
                 {% endfor %}
