@@ -117,3 +117,4 @@ dmypy.json
 /engine
 
 idea/
+data/channels.json
