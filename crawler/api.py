@@ -12,19 +12,27 @@ def get_channels():
     """
     Get channel json data through Youtube APIs
     """
-    channels = dict()
+    id, resume_id = 0, 1375
+
+    with open(CHANNELS_CORPUS, 'r') as handle:
+        channels = json.load(handle)
+
     f = open(CHANNELS_PATH, "r")
     for line in f:
-        if '/channel/' in line:
-            channel_id = line.split('/channel/')[1]
-            channel_id, channel = get_channels_by_id(channel_id)
-        elif '/user/' in line:
-            user = line.split('/user/')[1]
-            channel_id, channel = get_channels_by_user(user)
-        if channel is not None:
-            channels[channel_id] = channel
-        write_to_file(channels)
-        print('Corpus Extraction Done - ', line)
+        id += 1
+        if id > resume_id:
+            if '/channel/' in line:
+                channel_id = line.split('/channel/')[1]
+                channel_id, channel = get_channels_by_id(channel_id)
+            elif '/user/' in line:
+                user = line.split('/user/')[1]
+                channel_id, channel = get_channels_by_user(user)
+            else:
+                channel_id, channel = get_channels_by_id(line)
+            if channel is not None:
+                channels[channel_id] = channel
+            write_to_file(channels)
+            print('Corpus Extraction Done -', line + ' ' + str(id))
     f.close()
 
 
@@ -62,11 +70,19 @@ def generate_json_data(response):
         channel_id)
 
     all_upload_datetimes.sort()
-    latest_upload_datetime = all_upload_datetimes[-1]
-    upload_interval = get_upload_interval(all_upload_datetimes)
+    latest_upload_datetime, upload_interval = None, 10000
+    if len(all_upload_datetimes) > 0:
+        latest_upload_datetime = all_upload_datetimes[-1]
+        upload_interval = get_upload_interval(all_upload_datetimes)
     channel_create_date = datetime.datetime.strptime(
         response['items'][0]['snippet']['publishedAt'], "%Y-%m-%dT%H:%M:%S.%fZ")
+    if latest_upload_datetime is None:
+        latest_upload_datetime = channel_create_date
     channel_create_date = channel_create_date.strftime("%Y-%m-%d")
+
+    categories = []
+    if 'topicDetails' in response['items'][0] and 'topicCategories' in response['items'][0]['topicDetails']:
+        categories = response['items'][0]['topicDetails']['topicCategories']
 
     channel = {
         "channel_id": channel_id,
@@ -78,7 +94,7 @@ def generate_json_data(response):
         "video_count": int(response['items'][0]['statistics']['videoCount']),
         "subscriber_count": int(response['items'][0]['statistics']['subscriberCount']),
         "image_url": response['items'][0]['snippet']['thumbnails']['default']['url'],
-        "categories": response['items'][0]['topicDetails']['topicCategories'],
+        "categories": categories,
         "all_playlists_titles": all_playlists_titles,
         "all_playlists_desc": all_playlists_desc,
         "all_videos_titles": all_videos_titles,
@@ -94,6 +110,8 @@ def get_upload_interval(upload_datetimes):
     Return average upload interval in days 
     """
     delta = upload_datetimes[-1] - upload_datetimes[0]
+    if len(upload_datetimes) <= 1:
+        return 10000
     return delta.days * 1.0 / (len(upload_datetimes) - 1)
 
 
@@ -177,8 +195,26 @@ if __name__ == '__main__':
     api_service_name = "youtube"
     api_version = "v3"
 
-    # DEVELOPER_KEY = "AIzaSyAjMXLQV2VFoAiwxYtVrRCkT404E4_lx_I"
-    DEVELOPER_KEY = "AIzaSyDX5B2JVhyABl1CpfJ-oqgAvcVANiDhNsA"
+    DEVELOPER_KEY = "AIzaSyAjMXLQV2VFoAiwxYtVrRCkT404E4_lx_I"
+    # DEVELOPER_KEY = "AIzaSyDX5B2JVhyABl1CpfJ-oqgAvcVANiDhNsA"
+    # DEVELOPER_KEY = "AIzaSyDmEB6yU7S28pDubsn_4bj3VfYB87XzZoo"
+    # DEVELOPER_KEY = "AIzaSyCX9xAa6ppjgMn0L1bWFZxr3lhD2CE4UgA"
+    # DEVELOPER_KEY = "AIzaSyDkgfr9hTbT8Jn4SLZ20NAHy1njVeNtkFc"
+    # DEVELOPER_KEY = "AIzaSyBngvBbaJxoZbNI5BvhzhlJh1XWYIEJ24w"
+    # DEVELOPER_KEY = "AIzaSyCizsSlO69yTVuJpTefFLbs5U2AN0E4ce8"
+    # DEVELOPER_KEY = "AIzaSyDt2pjMNKO_GpgTNISfZq7HwYVCkbpKrzc"
+    # DEVELOPER_KEY = "AIzaSyBKr7reeGOMUWXywTM_ki9CWMb_mkLC9Vk"
+    # DEVELOPER_KEY = "AIzaSyC3zuhJNNKqUPlprOqj_2nSPOrHmBVfnnM"
+    # DEVELOPER_KEY = "AIzaSyA4H0lGCpoD2WDL6-UfXM1rmt9ivArCj9E"
+    # DEVELOPER_KEY = "AIzaSyBbcmi9ftOhj4N9HZT5MjfuvflDeqE8TfI"
+    # DEVELOPER_KEY = "AIzaSyDgK3K6zbgqw3p5r3haMURIQ-6EDlggjOY"
+    # DEVELOPER_KEY = "AIzaSyA3FIbhh4XEiZ9HqI8a1XmbT7ZnYM8CcSs"
+    # DEVELOPER_KEY = "AIzaSyBu7Cf4voyk9lgqcNTS37_rIL1lyNjLfrI"
+    # DEVELOPER_KEY = "AIzaSyBthPmaUiGA8ESB1MnpR1DWlgKu3-OHozk"
+    # DEVELOPER_KEY = "AIzaSyAJd4JMCw0F_6AYeXQkAaHdgJlp4CWJAT4"
+    # DEVELOPER_KEY = "AIzaSyB2ZRSInsRFg8GukZwy9UDUwsyr3x_Zpfg"
+    # DEVELOPER_KEY = "AIzaSyDleNX060ViHKLua518Nn0BW4pLxuCaM5E"
+    
 
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, developerKey=DEVELOPER_KEY)
