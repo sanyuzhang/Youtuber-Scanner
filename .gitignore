@@ -115,4 +115,6 @@ dmypy.json
 
 # VirualEnv
 /engine
+
+.idea/
 data/channels.json
