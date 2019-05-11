@@ -12,7 +12,7 @@ def get_channels():
     """
     Get channel json data through Youtube APIs
     """
-    id, resume_id = 0, 1375
+    id, resume_id = 0, 1676
 
     with open(CHANNELS_CORPUS, 'r') as handle:
         channels = json.load(handle)
@@ -195,10 +195,10 @@ if __name__ == '__main__':
     api_service_name = "youtube"
     api_version = "v3"
 
-    DEVELOPER_KEY = "AIzaSyAjMXLQV2VFoAiwxYtVrRCkT404E4_lx_I"
+    # DEVELOPER_KEY = "AIzaSyAjMXLQV2VFoAiwxYtVrRCkT404E4_lx_I"
     # DEVELOPER_KEY = "AIzaSyDX5B2JVhyABl1CpfJ-oqgAvcVANiDhNsA"
     # DEVELOPER_KEY = "AIzaSyDmEB6yU7S28pDubsn_4bj3VfYB87XzZoo"
-    # DEVELOPER_KEY = "AIzaSyCX9xAa6ppjgMn0L1bWFZxr3lhD2CE4UgA"
+    DEVELOPER_KEY = "AIzaSyCX9xAa6ppjgMn0L1bWFZxr3lhD2CE4UgA"
     # DEVELOPER_KEY = "AIzaSyDkgfr9hTbT8Jn4SLZ20NAHy1njVeNtkFc"
     # DEVELOPER_KEY = "AIzaSyBngvBbaJxoZbNI5BvhzhlJh1XWYIEJ24w"
     # DEVELOPER_KEY = "AIzaSyCizsSlO69yTVuJpTefFLbs5U2AN0E4ce8"
