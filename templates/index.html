@@ -44,68 +44,78 @@
                 {% endfor %}
               </h2>
             {% endif %}
-            {% if unknown_terms %}
-              <h2 class="subs-title">Unknown word(s):
-                {% for term in unknown_terms %}
-                  <span class="data-in-row">{{ term }}</span>
-                {% endfor %}
-              </h2>
+            {% if res_num == 0 %}
+              {% if unknown_query %}
+                <h2 class="subs-title">Cannot Find Word:
+                  <span class="data-in-row">{{ unknown_query }}</span>
+                </h2>
+              {% endif %}
+              {% if unknown_channel_title %}
+                <h2 class="subs-title">Cannot Find Youtuber:
+                  <span class="data-in-row">{{ unknown_channel_title }}</span>
+                </h2>
+              {% endif %}
+              {% if unknown_upload_interval %}
+                <h2 class="subs-title">Invalid Upload Interval:
+                  <span class="data-in-row">Cannot find youtubers uploading video every {{ unknown_upload_interval }} days.</span>
+                </h2>
+              {% endif %}
+            {% else %}
+              <h2 class="subs-title">Total hits: <span class="data-in-row">{{ res_num }}</span></h2>
+              <div class="list-group">
+                  {% for res in results %}
+                    <a href="/documents/{{ res }}" target="_blank" class="list-group-item">
+
+                      <img src="{{ results[res]['image_url'] }}" class="avartar">
+                        
+                      <h4 class="list-group-item-heading film-header">TITLE: <span class="data-in-row">{{ results[res]['channel_title'] }}</span></h4>
+
+                      <h4 class="list-group-item-heading film-header">SCORE:
+                        <span class="data-in-row">{{ results[res]['score'] }}</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">VIDEO COUNTS:
+                        <span class="data-in-row">{{ results[res]['video_count'] }}</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">VIEW COUNTS:
+                        <span class="data-in-row">{{ results[res]['view_count'] }}</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">SUBSCRIBER COUNTS:
+                        <span class="data-in-row">{{ results[res]['subscriber_count'] }}</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">LAST UPLOAD DATE:
+                        <span class="data-in-row">{{ results[res]['latest_upload_datetime'] }}</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">CHANNEL CREATED DATE:
+                        <span class="data-in-row">{{ results[res]['channel_create_date'] }}</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">UPLOAD INTERVAL:
+                        <span class="data-in-row">Every {{ results[res]['upload_interval'] }} days</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">CATEGORIES:
+                        {% for category in results[res]['categories'] %}
+                          <span class="data-in-row">{{ category }}</span>
+                        {% endfor %}
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">CHANNEL URL: 
+                        <span class="data-in-row">{{ results[res]['channel_url'] }}</span>
+                      </h4>
+
+                      <h4 class="list-group-item-heading film-header">DESCRIPTION:
+                        <p class="data-in-row" id="channel-description">{{ results[res]['channel_desc'] }}</span>
+                      </h4>
+                    
+                    </a>
+                  {% endfor %}
+              </div>
             {% endif %}
-            
-            <h2 class="subs-title">Total hits: <span class="data-in-row">{{ res_num }}</span></h2>
-            <div class="list-group">
-                {% for res in results %}
-                  <a href="/documents/{{ res }}" target="_blank" class="list-group-item">
-
-                    <img src="{{ results[res]['image_url'] }}" class="avartar">
-                      
-                    <h4 class="list-group-item-heading film-header">TITLE: <span class="data-in-row">{{ results[res]['channel_title'] }}</span></h4>
-
-                    <h4 class="list-group-item-heading film-header">SCORE:
-                      <span class="data-in-row">{{ results[res]['score'] }}</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">VIDEO COUNTS:
-                      <span class="data-in-row">{{ results[res]['video_count'] }}</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">VIEW COUNTS:
-                      <span class="data-in-row">{{ results[res]['view_count'] }}</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">SUBSCRIBER COUNTS:
-                      <span class="data-in-row">{{ results[res]['subscriber_count'] }}</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">LAST UPLOAD DATE:
-                      <span class="data-in-row">{{ results[res]['latest_upload_datetime'] }}</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">CHANNEL CREATED DATE:
-                      <span class="data-in-row">{{ results[res]['channel_create_date'] }}</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">UPLOAD INTERVAL:
-                      <span class="data-in-row">Every {{ results[res]['upload_interval'] }} days</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">CATEGORIES:
-                      {% for category in results[res]['categories'] %}
-                        <span class="data-in-row">{{ category }}</span>
-                      {% endfor %}
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">CHANNEL URL: 
-                      <span class="data-in-row">{{ results[res]['channel_url'] }}</span>
-                    </h4>
-
-                    <h4 class="list-group-item-heading film-header">DESCRIPTION:
-                      <p class="data-in-row" id="channel-description">{{ results[res]['channel_desc'] }}</span>
-                    </h4>
-                  
-                  </a>
-                {% endfor %}
-            </div>
             
             {% if res_num >= 10 %}
             <nav aria-label="Page navigation">
