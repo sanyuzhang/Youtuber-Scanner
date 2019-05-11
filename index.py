@@ -1,9 +1,11 @@
 import json
 import re
 import time
+
+from crawler.constants import *
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
-from elasticsearch_dsl import Index, Document, Text, Keyword, Integer, Double, Date
+from elasticsearch_dsl import Index, Document, Text, Keyword, Integer, Double, Date, Long
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.analysis import tokenizer, analyzer
 from elasticsearch_dsl.query import MultiMatch, Match
@@ -42,9 +44,9 @@ class Channel(Document):
     all_videos_desc = Text(analyzer=text_analyzer)
 
     upload_interval = Double()
-    view_count = Integer()
+    view_count = Long()
     video_count = Integer()
-    subscriber_count = Integer()
+    subscriber_count = Long()
 
     channel_create_date = Date()
     latest_upload_datetime = Date()
@@ -71,7 +73,7 @@ def buildIndex():
     channel_index.create()
 
     # Open the json channel corpus
-    with open('data/channels.json', 'r', encoding='utf-8') as data_file:
+    with open(CHANNELS_CORPUS, 'r', encoding='utf-8') as data_file:
         # load channels from json file into dictionary
         channels = json.load(data_file)
 
@@ -83,6 +85,7 @@ def buildIndex():
     def actions():
         # cid is channel id (used as key into channels dictionary)
         for cid in channels:
+            print('Indexed channel - ', cid)
             yield {
                 "_index": "channel_index",
                 "_type": 'doc',
@@ -101,7 +104,9 @@ def buildIndex():
                 "latest_upload_datetime": channels[cid]['latest_upload_datetime'],
                 "categories": channels[cid]['categories']
             }
+        
     helpers.bulk(es, actions())
+
 
 
 # command line invocation builds index and prints the running time.
