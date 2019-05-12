@@ -12,7 +12,7 @@ os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 api_service_name = "youtube"
 api_version = "v3"
-DEVELOPER_KEY = "AIzaSyDv0goC4h_p8hG8WKacN5i5TwykXrg7lO4"
+DEVELOPER_KEY = "AIzaSyCbTJAJMilmd9H48NctbifTCePFIKkMzZs"
 f = open('url_from_ten_differet_categories.txt', "w")
 top_ten_categories = ['Educational', 'Cooking', 'Fitness','Sport', 'History', 'Science', 'News', 'Music','Movie', 'Travel','Photography', 'Video_Game', 'Vlog']
 
