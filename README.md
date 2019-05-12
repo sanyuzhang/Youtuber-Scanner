@@ -18,6 +18,8 @@ The web UI will parse users' queries, then trigger correct intent, which will th
 Channels corpus data is too large to push to Github.
 Therefore, please download the corpus data here - https://drive.google.com/file/d/1J4YLH-R20ZAW7mTqAi7Wo7szSbhWqgZ2/view?usp=sharing
 
+Then, put it under folder `data/`.
+
 Youtuber's channels data will be composed of structured data and unstructured data like:
 ```
 {
@@ -73,8 +75,9 @@ pip3 install -r requirements.txt
 
 To run backend:
 1. Enable the correct python virtual env
-2. Start Elastic Search Server
+2. `sudo -i service elasticsearch start`
 3. `python3 index.py`
 4. `python3 main.py`
+5. Open your browser and go to http://127.0.0.1:5000
 
-A flask server will run on port 5555.
+A flask server will run on port 5000.
