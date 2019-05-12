@@ -72,17 +72,28 @@ def results():
     terms = re.sub('["].*?["]', "", query).lower().strip().split()
     ignored = {t for t in terms if t in STOPWORDS}
     terms = [t for t in terms if t not in STOPWORDS]
-    for t in terms:
-        s = search.query(Q("multi_match", query=t, fields=['channel_title'], type='most_fields', boost=10)
-                         | Q("multi_match", query=t, fields=['channel_desc'], type='most_fields', boost=9)
-                         | Q("multi_match", query=t, fields=['all_playlists_titles'], type='most_fields', boost=6)
-                         | Q("multi_match", query=t, fields=['all_playlists_desc'], type='most_fields', boost=5)
-                         | Q("multi_match", query=t, fields=['all_videos_titles'], type='most_fields', boost=2)
-                         | Q("multi_match", query=t, fields=['all_videos_desc'], type='most_fields', boost=1))
-        if s.count() == 0:
-            not_found = True
-            unknown_query = t
-            break
+
+    # search for upload frequency
+    if len(upload_interval) == 0:
+        upload_interval = 100000  # Extremely Long Interval
+    s = search.query('range', upload_interval={
+        'lt': float(upload_interval)})
+    if s.count() == 0:
+        not_found = True
+        unknown_upload_interval = upload_interval
+
+    if not_found is False:
+        for t in terms:
+            s = s.query(Q("multi_match", query=t, fields=['channel_title'], type='most_fields', boost=10)
+                        | Q("multi_match", query=t, fields=['channel_desc'], type='most_fields', boost=9)
+                        | Q("multi_match", query=t, fields=['all_playlists_titles'], type='most_fields', boost=6)
+                        | Q("multi_match", query=t, fields=['all_playlists_desc'], type='most_fields', boost=5)
+                        | Q("multi_match", query=t, fields=['all_videos_titles'], type='most_fields', boost=2)
+                        | Q("multi_match", query=t, fields=['all_videos_desc'], type='most_fields', boost=1))
+            if s.count() == 0:
+                not_found = True
+                unknown_query = t
+                break
 
     # search phrases
     if not_found is False:
@@ -109,15 +120,6 @@ def results():
                     not_found = True
                     unknown_channel_title = t
                     break
-
-    # search for upload frequency
-    if not_found is False:
-        if len(upload_interval) > 0:
-            s = s.query('range', upload_interval={
-                        'lt': float(upload_interval)})
-            if s.count() == 0:
-                not_found = True
-                unknown_upload_interval = upload_interval
 
     # determine the subset of results to display (based on current <page_id> value)
     start = 0 + (page_id - 1) * 10
