@@ -74,10 +74,12 @@ def results():
     terms = [t for t in terms if t not in STOPWORDS]
 
     # search for upload frequency
-    if len(upload_interval) == 0:
-        upload_interval = 100000  # Extremely Long Interval
-    s = search.query('range', upload_interval={
-        'lt': float(upload_interval)})
+    if len(upload_interval) > 0:
+        s = search.query('range', upload_interval={
+            'lt': float(upload_interval)})
+    else:
+        s = search.query('range', upload_interval={
+            'lt': 10000})
     if s.count() == 0:
         not_found = True
         unknown_upload_interval = upload_interval
