@@ -1,4 +1,7 @@
 """
+main.py
+author: Daniel Zhang, He Zhang, Shangyu Zhang
+
 This module implements a (partial, sample) query interface for elasticsearch channel search. 
 You will need to rewrite and expand sections to support the types of queries over the fields in your UI.
 

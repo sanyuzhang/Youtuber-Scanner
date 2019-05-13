@@ -1,4 +1,7 @@
-#coding = utf-8
+"""
+crawler.py
+author: He Zhang, Shangyu Zhang
+"""
 
 from urllib.request import urlopen
 import json

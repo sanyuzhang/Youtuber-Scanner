@@ -1,3 +1,8 @@
+"""
+count_videos.py
+author: Daniel Zhang, Shangyu Zhang
+"""
+
 from constants import *
 import json
 
