@@ -1,3 +1,8 @@
+"""
+category.py
+author: He Zhang, Shangyu Zhang
+"""
+
 from constants import *
 
 import json

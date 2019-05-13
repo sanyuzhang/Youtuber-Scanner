@@ -1,3 +1,8 @@
+"""
+upload_freq.py
+author: He Zhang, Shangyu Zhang
+"""
+
 from constants import *
 import datetime
 import json
