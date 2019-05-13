@@ -203,10 +203,6 @@
                         <span class="data-in-row">{{ results[res]['subscriber_count'] }}</span>
                       </h4>
 
-                      <h4 class="list-group-item-heading film-header">LAST UPLOAD DATE:
-                        <span class="data-in-row">{{ results[res]['latest_upload_datetime'] }}</span>
-                      </h4>
-
                       <h4 class="list-group-item-heading film-header">CHANNEL CREATED DATE:
                         <span class="data-in-row">{{ results[res]['channel_create_date'] }}</span>
                       </h4>
@@ -240,6 +236,7 @@
                 <input type="hidden" name="query" value="{{ orig_query }}">
                 <input type="hidden" value="{{ orig_channel_title }}" name="channel_title">
                 <input type="hidden" value="{{ orig_upload_interval }}" name="upload_interval">
+                <input type="hidden" value="{{ category }}" name="category">
                 {% for i in range(1, pages_num) %}
                   <li>
                     {% if page_id == i %}

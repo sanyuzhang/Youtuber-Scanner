@@ -17,10 +17,10 @@ from flask import *
 from index import Channel
 from pprint import pprint
 from constants import STOPWORDS
-from elasticsearch_dsl import Q
 from elasticsearch_dsl.utils import AttrList
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
+from collections import OrderedDict
 
 app = Flask(__name__)
 
@@ -137,13 +137,14 @@ def results():
     end = 10 + (page_id - 1) * 10
 
     # execute search and return results in specified range.
-    response = s[start:end].execute()
+    response = s[0:1800].execute()
 
     # insert data into response
     result_list = {}
+
     for hit in response.hits:
         result = {}
-        result['score'] = hit.meta.score
+        result['score'] = hit.meta.score / hit.upload_interval
         result['channel_title'] = hit.channel_title
         result['channel_desc'] = hit.channel_desc
         result['view_count'] = hit.view_count
@@ -157,8 +158,17 @@ def results():
         result['upload_interval'] = round(hit.upload_interval, 1)
         result_list[hit.meta.id] = result
 
+    result_list = OrderedDict(
+        sorted(result_list.items(), key=lambda item: item[1]['score'], reverse=True))
+
+    slice_id, results = 0, {}
+    for result in result_list:
+        if slice_id >= start and slice_id < end:
+            results[result] = result_list[result]
+        slice_id += 1
+
     # make the result list available globally
-    gresults = result_list
+    gresults = results
 
     # get the total number of matching results
     result_num = response.hits.total
@@ -166,7 +176,7 @@ def results():
     # if we find the results, extract title and text information from doc_data, else do nothing
     if result_num > 0:
         return render_template(
-            'index.html', is_result=True, results=result_list, res_num=result_num,
+            'index.html', is_result=True, results=results, res_num=result_num,
             pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query, category=category,
             orig_channel_title=channel_title, orig_upload_interval=upload_interval, ignored=ignored)
     else:
