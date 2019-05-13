@@ -88,6 +88,11 @@ def results():
         not_found = True
         unknown_upload_interval = upload_interval
 
+    # search category
+    if not_found is False and category:
+        s = s.query(Q("multi_match", query=category, fields=[
+                    'categories'], type='most_fields'))
+
     if not_found is False:
         for t in terms:
             s = s.query(Q("multi_match", query=t, fields=['channel_title'], type='most_fields', boost=10)
