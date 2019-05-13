@@ -13,6 +13,7 @@ https://elasticsearch-dsl.readthedocs.io/en/latest/search_dsl.html
 """
 
 import re
+import math
 from flask import *
 from index import Channel
 from pprint import pprint
@@ -144,7 +145,14 @@ def results():
 
     for hit in response.hits:
         result = {}
-        result['score'] = hit.meta.score / hit.upload_interval
+        if hit.video_count == 0 or hit.subscriber_count == 0 or hit.view_count == 0:
+            normalized_subscriber_over_video = 0
+        else:
+            normalized_subscriber_over_video = math.log(hit.subscriber_count * 1.0 / hit.video_count, 2) * 10
+        
+        normalized_upload_freq = 1 / (hit.upload_interval + 1) * 10
+
+        result['score'] = hit.meta.score + normalized_subscriber_over_video + normalized_upload_freq
         result['channel_title'] = hit.channel_title
         result['channel_desc'] = hit.channel_desc
         result['view_count'] = hit.view_count
