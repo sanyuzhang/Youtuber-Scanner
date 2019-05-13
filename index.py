@@ -121,7 +121,7 @@ def get_categories(categories):
     cates = list()
     for category in categories:
         if 'wiki/'in category:
-            cates.append(category.split('wiki/')[1])
+            cates.append(category.split('wiki/')[1].replace('_', ' ', 10))
     return cates
 
 

@@ -28,6 +28,7 @@ app = Flask(__name__)
 orig_query = ""
 orig_channel_title = ""
 orig_upload_interval = ""
+orig_category = ""
 gresults = {}
 
 # display query page
@@ -41,6 +42,7 @@ def results():
     global orig_query
     global orig_channel_title
     global orig_upload_interval
+    global orig_category
     global gresults
 
     page_id = get_page_id(request)
@@ -50,11 +52,13 @@ def results():
     query = request.form['query']
     channel_title = request.form['channel_title']
     upload_interval = request.form['upload_interval']
+    category = request.form['category']
 
     # update global variable template data
     orig_query = query
     orig_channel_title = channel_title
     orig_upload_interval = upload_interval
+    orig_category = category
 
     ignored = {}
 
@@ -158,11 +162,11 @@ def results():
     if result_num > 0:
         return render_template(
             'index.html', is_result=True, results=result_list, res_num=result_num,
-            pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query,
+            pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query, category=category,
             orig_channel_title=channel_title, orig_upload_interval=upload_interval, ignored=ignored)
     else:
         return render_template(
-            'index.html', is_result=True, res_num=0, pages_num=0, page_id_id=0,
+            'index.html', is_result=True, res_num=0, pages_num=0, page_id_id=0, category=category,
             orig_query=query, orig_channel_title=channel_title, orig_upload_interval=upload_interval,
             ignored=ignored, unknown_query=unknown_query, unknown_channel_title=unknown_channel_title,
             unknown_upload_interval=unknown_upload_interval)

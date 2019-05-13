@@ -25,10 +25,127 @@
           </div>
 
           <div class="subcription-info text-center">
-            <form class="subscribe_form" action="/results" method="post">
+            <form id="search-form" class="subscribe_form" action="/results" method="post">
               <input required="" value="{{ orig_query }}" placeholder="Enter a keyword or sth ..." id="query" name="query" type="text">
               <input value="{{ orig_channel_title }}" placeholder="Search a youtuber's name ..." id="channel_title" name="channel_title" type="text">
-              <input value="{{ orig_upload_interval }}" placeholder="Upload interval ..." id="upload_interval" name="upload_interval" type="number">
+              <input value="{{ orig_upload_interval }}" placeholder="Upload Frequency ..." id="upload_interval" name="upload_interval" type="number">
+
+              <select id="category" name="category" form="search-form">
+                  {% if category %}
+                  <option>Select A Category</option>
+                  {% else %}
+                  <option selected>Select A Category</option>
+                  {% endif %}
+
+                  {% if category == "Sport" %}
+                  <option value="Sport" selected>Sport</option>
+                  {% else %}
+                  <option value="Sport">Sport</option>
+                  {% endif %}
+
+                  {% if category == "Health" %}
+                  <option value="Health" selected>Health</option>
+                  {% else %}
+                  <option value="Health">Health</option>
+                  {% endif %}
+
+                  {% if category == "Game" %}
+                  <option value="Game" selected>Game</option>
+                  {% else %}
+                  <option value="Game">Game</option>
+                  {% endif %}
+
+                  {% if category == "Music" %}
+                  <option value="Music" selected>Music</option>
+                  {% else %}
+                  <option value="Music">Music</option>
+                  {% endif %}
+
+                  {% if category == "Fashion" %}
+                  <option value="Fashion" selected>Fashion</option>
+                  {% else %}
+                  <option value="Fashion">Fashion</option>
+                  {% endif %}
+
+                  {% if category == "Vehicle" %}
+                  <option value="Vehicle" selected>Vehicle</option>
+                  {% else %}
+                  <option value="Vehicle">Vehicle</option>
+                  {% endif %}
+
+                  {% if category == "Technology" %}
+                  <option value="Technology" selected>Technology</option>
+                  {% else %}
+                  <option value="Technology">Technology</option>
+                  {% endif %}
+
+                  {% if category == "Pet" %}
+                  <option value="Pet" selected>Pet</option>
+                  {% else %}
+                  <option value="Pet">Pet</option>
+                  {% endif %}
+
+                  {% if category == "Physical fitness" %}
+                  <option value="Physical fitness" selected>Physical fitness</option>
+                  {% else %}
+                  <option value="Physical fitness">Physical fitness</option>
+                  {% endif %}
+
+                  {% if category == "Food" %}
+                  <option value="Food" selected>Food</option>
+                  {% else %}
+                  <option value="Food">Food</option>
+                  {% endif %}
+
+                  {% if category == "Religion" %}
+                  <option value="Religion" selected>Religion</option>
+                  {% else %}
+                  <option value="Religion">Religion</option>
+                  {% endif %}
+
+                  {% if category == "Hobby" %}
+                  <option value="Hobby" selected>Hobby</option>
+                  {% else %}
+                  <option value="Hobby">Hobby</option>
+                  {% endif %}
+
+                  {% if category == "Politics" %}
+                  <option value="Politics" selected>Politics</option>
+                  {% else %}
+                  <option value="Politics">Politics</option>
+                  {% endif %}
+
+                  {% if category == "Military" %}
+                  <option value="Military" selected>Military</option>
+                  {% else %}
+                  <option value="Military">Military</option>
+                  {% endif %}
+
+                  {% if category == "Entertainment" %}
+                  <option value="Entertainment" selected>Entertainment</option>
+                  {% else %}
+                  <option value="Entertainment">Entertainment</option>
+                  {% endif %}
+
+                  {% if category == "Knowledge" %}
+                  <option value="Knowledge" selected>Knowledge</option>
+                  {% else %}
+                  <option value="Knowledge">Knowledge</option>
+                  {% endif %}
+
+                  {% if category == "Performing arts" %}
+                  <option value="Performing arts" selected>Performing arts</option>
+                  {% else %}
+                  <option value="Performing arts">Performing arts</option>
+                  {% endif %}
+
+                  {% if category == "Lifestyle (sociology)" %}
+                  <option value="Lifestyle (sociology)" selected>Lifestyle (sociology)</option>
+                  {% else %}
+                  <option value="Lifestyle (sociology)">Lifestyle (sociology)</option>
+                  {% endif %}
+                </select>
+
               <input class="subscribe" name="search" value="SEARCH" type="submit">
             </form>
           </div>
