@@ -21,7 +21,7 @@ es = Elasticsearch()
 text_analyzer = analyzer(
     'custom',
     tokenizer='lowercase',
-    filter=['stop', 'asciifolding']
+    filter=['stop', 'asciifolding', 'porter_stem']
 )
 
 name_analyzer = analyzer(
@@ -39,10 +39,10 @@ class Channel(Document):
     channel_title = Text(analyzer=name_analyzer)
     channel_desc = Text(analyzer=text_analyzer)
 
-    all_playlists_titles = Text(analyzer=text_analyzer)
+    all_playlists_titles = Text(analyzer=name_analyzer)
     all_playlists_desc = Text(analyzer=text_analyzer)
 
-    all_videos_titles = Text(analyzer=text_analyzer)
+    all_videos_titles = Text(analyzer=name_analyzer)
     all_videos_desc = Text(analyzer=text_analyzer)
 
     upload_interval = Double()

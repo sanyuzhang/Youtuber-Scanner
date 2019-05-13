@@ -22,6 +22,7 @@ from elasticsearch_dsl.utils import AttrList
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
 from collections import OrderedDict
+from nltk.stem.porter import PorterStemmer
 
 app = Flask(__name__)
 
@@ -47,6 +48,8 @@ def results():
     global gresults
 
     page_id = get_page_id(request)
+
+    porter_stemmer = PorterStemmer()
 
     # if the method of request is post (for initial query), store query in local global variables
     # if the method of request is get (for "next" results), extract query contents from client's global variables
@@ -74,7 +77,8 @@ def results():
     unknown_query, unknown_channel_title, unknown_upload_interval = '', '', ''
 
     # search for text
-    terms = re.sub('["].*?["]', "", query).lower().strip().split()
+    query = query.lower()
+    terms = re.sub('["].*?["]', "", query).strip().split()
     ignored = {t for t in terms if t in STOPWORDS}
     terms = [t for t in terms if t not in STOPWORDS]
 
@@ -96,12 +100,13 @@ def results():
 
     if not_found is False:
         for t in terms:
+            stemmized_t = porter_stemmer.stem(t)
             s = s.query(Q("multi_match", query=t, fields=['channel_title'], type='most_fields', boost=10)
-                        | Q("multi_match", query=t, fields=['channel_desc'], type='most_fields', boost=9)
+                        | Q("multi_match", query=stemmized_t, fields=['channel_desc'], type='most_fields', boost=9)
                         | Q("multi_match", query=t, fields=['all_playlists_titles'], type='most_fields', boost=6)
-                        | Q("multi_match", query=t, fields=['all_playlists_desc'], type='most_fields', boost=5)
+                        | Q("multi_match", query=stemmized_t, fields=['all_playlists_desc'], type='most_fields', boost=5)
                         | Q("multi_match", query=t, fields=['all_videos_titles'], type='most_fields', boost=2)
-                        | Q("multi_match", query=t, fields=['all_videos_desc'], type='most_fields', boost=1))
+                        | Q("multi_match", query=stemmized_t, fields=['all_videos_desc'], type='most_fields', boost=1))
             if s.count() == 0:
                 not_found = True
                 unknown_query = t
@@ -111,12 +116,13 @@ def results():
     if not_found is False:
         phrases = re.findall(r'"(.*?)"', query)
         for p in phrases:
-            s = s.query(Q("multi_match", query=p.lower(), fields=['channel_title'], type='phrase', boost=10)
-                        | Q("multi_match", query=p.lower(), fields=['channel_desc'], type='most_fields', boost=9)
-                        | Q("multi_match", query=p.lower(), fields=['all_playlists_titles'], type='most_fields', boost=6)
-                        | Q("multi_match", query=p.lower(), fields=['all_playlists_desc'], type='most_fields', boost=5)
-                        | Q("multi_match", query=p.lower(), fields=['all_videos_titles'], type='most_fields', boost=2)
-                        | Q("multi_match", query=p.lower(), fields=['all_videos_desc'], type='most_fields', boost=1))
+            stemmized_p = porter_stemmer.stem(p)
+            s = s.query(Q("multi_match", query=p, fields=['channel_title'], type='phrase', boost=10)
+                        | Q("multi_match", query=stemmized_p, fields=['channel_desc'], type='most_fields', boost=9)
+                        | Q("multi_match", query=p, fields=['all_playlists_titles'], type='most_fields', boost=6)
+                        | Q("multi_match", query=stemmized_p, fields=['all_playlists_desc'], type='most_fields', boost=5)
+                        | Q("multi_match", query=p, fields=['all_videos_titles'], type='most_fields', boost=2)
+                        | Q("multi_match", query=stemmized_p, fields=['all_videos_desc'], type='most_fields', boost=1))
             if s.count() == 0:
                 not_found = True
                 unknown_query = p
@@ -148,11 +154,13 @@ def results():
         if hit.video_count == 0 or hit.subscriber_count == 0 or hit.view_count == 0:
             normalized_subscriber_over_video = 0
         else:
-            normalized_subscriber_over_video = math.log(hit.subscriber_count * 1.0 / hit.video_count, 2) * 10
-        
+            normalized_subscriber_over_video = math.log(
+                hit.subscriber_count * 1.0 / hit.video_count, 2) * 10
+
         normalized_upload_freq = 1 / (hit.upload_interval + 1) * 10
 
-        result['score'] = hit.meta.score + normalized_subscriber_over_video + normalized_upload_freq
+        result['score'] = hit.meta.score + \
+            normalized_subscriber_over_video + normalized_upload_freq
         result['channel_title'] = hit.channel_title
         result['channel_desc'] = hit.channel_desc
         result['view_count'] = hit.view_count
@@ -170,6 +178,7 @@ def results():
         sorted(result_list.items(), key=lambda item: item[1]['score'], reverse=True))
 
     slice_id, results = 0, {}
+    end = end if end < len(result_list) else len(result_list)
     for result in result_list:
         if slice_id >= start and slice_id < end:
             results[result] = result_list[result]
@@ -185,12 +194,12 @@ def results():
     if result_num > 0:
         return render_template(
             'index.html', is_result=True, results=results, res_num=result_num,
-            pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query, category=category,
+            pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=orig_query, category=category,
             orig_channel_title=channel_title, orig_upload_interval=upload_interval, ignored=ignored)
     else:
         return render_template(
             'index.html', is_result=True, res_num=0, pages_num=0, page_id_id=0, category=category,
-            orig_query=query, orig_channel_title=channel_title, orig_upload_interval=upload_interval,
+            orig_query=orig_query, orig_channel_title=channel_title, orig_upload_interval=upload_interval,
             ignored=ignored, unknown_query=unknown_query, unknown_channel_title=unknown_channel_title,
             unknown_upload_interval=unknown_upload_interval)
 

@@ -16,6 +16,8 @@ DEVELOPER_KEY = "AIzaSyCbTJAJMilmd9H48NctbifTCePFIKkMzZs"
 f = open('../data/url_from_ten_differet_categories.txt', "w")
 top_ten_categories = ['Educational', 'Cooking', 'Fitness','Sport', 'History', 'Science', 'News', 'Music','Movie', 'Travel','Photography', 'Video_Game', 'Vlog']
 
+"""Here is the 10 categories which contain some sub key words we used to search channel ID using youtube API"""
+
 category_to_keyword = {}
 category_to_keyword['Educational'] = ['algebra', 'geometry', 'machine learning', 'programming', 'math class', 'physics class', 'history class','statistics', 'probability','negotiation skills']
 category_to_keyword['Cooking'] = ['cooking basics', 'how to cook steak', 'how to cook western food', 'how to cook asian food', 'how to cook mediterranean food']
@@ -35,6 +37,8 @@ category_to_keyword['Vlog'] = ['vlog']
 urlSet = set([])
 urlRes = []
 
+
+"""Get channel ID and write to txt file"""
 for category in top_ten_categories:
         for keyword in category_to_keyword[category]:
                 youTubeApi = googleapiclient.discovery.build(
