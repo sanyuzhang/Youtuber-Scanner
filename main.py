@@ -178,6 +178,7 @@ def results():
         sorted(result_list.items(), key=lambda item: item[1]['score'], reverse=True))
 
     slice_id, results = 0, {}
+    end = end if end < len(result_list) else len(result_list)
     for result in result_list:
         if slice_id >= start and slice_id < end:
             results[result] = result_list[result]
