@@ -118,3 +118,4 @@ dmypy.json
 
 .idea/
 data/channels.json
+data/channels_fixed.json

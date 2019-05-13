@@ -13,14 +13,15 @@ https://elasticsearch-dsl.readthedocs.io/en/latest/search_dsl.html
 """
 
 import re
+import math
 from flask import *
 from index import Channel
 from pprint import pprint
 from constants import STOPWORDS
-from elasticsearch_dsl import Q
 from elasticsearch_dsl.utils import AttrList
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
+from collections import OrderedDict
 
 app = Flask(__name__)
 
@@ -28,6 +29,7 @@ app = Flask(__name__)
 orig_query = ""
 orig_channel_title = ""
 orig_upload_interval = ""
+orig_category = ""
 gresults = {}
 
 # display query page
@@ -41,6 +43,7 @@ def results():
     global orig_query
     global orig_channel_title
     global orig_upload_interval
+    global orig_category
     global gresults
 
     page_id = get_page_id(request)
@@ -50,11 +53,13 @@ def results():
     query = request.form['query']
     channel_title = request.form['channel_title']
     upload_interval = request.form['upload_interval']
+    category = request.form['category']
 
     # update global variable template data
     orig_query = query
     orig_channel_title = channel_title
     orig_upload_interval = upload_interval
+    orig_category = category
 
     ignored = {}
 
@@ -74,13 +79,20 @@ def results():
     terms = [t for t in terms if t not in STOPWORDS]
 
     # search for upload frequency
-    if len(upload_interval) == 0:
-        upload_interval = 100000  # Extremely Long Interval
-    s = search.query('range', upload_interval={
-        'lt': float(upload_interval)})
+    if len(upload_interval) > 0:
+        s = search.query('range', upload_interval={
+            'lt': float(upload_interval)})
+    else:
+        s = search.query('range', upload_interval={
+            'lt': 10000})
     if s.count() == 0:
         not_found = True
         unknown_upload_interval = upload_interval
+
+    # search category
+    if not_found is False and category != 'Select A Category':
+        s = s.query(Q("multi_match", query=category, fields=[
+                    'categories'], type='most_fields'))
 
     if not_found is False:
         for t in terms:
@@ -126,13 +138,21 @@ def results():
     end = 10 + (page_id - 1) * 10
 
     # execute search and return results in specified range.
-    response = s[start:end].execute()
+    response = s[0:1800].execute()
 
     # insert data into response
     result_list = {}
+
     for hit in response.hits:
         result = {}
-        result['score'] = hit.meta.score
+        if hit.video_count == 0 or hit.subscriber_count == 0 or hit.view_count == 0:
+            normalized_subscriber_over_video = 0
+        else:
+            normalized_subscriber_over_video = math.log(hit.subscriber_count * 1.0 / hit.video_count, 2) * 10
+        
+        normalized_upload_freq = 1 / (hit.upload_interval + 1) * 10
+
+        result['score'] = hit.meta.score + normalized_subscriber_over_video + normalized_upload_freq
         result['channel_title'] = hit.channel_title
         result['channel_desc'] = hit.channel_desc
         result['view_count'] = hit.view_count
@@ -146,8 +166,17 @@ def results():
         result['upload_interval'] = round(hit.upload_interval, 1)
         result_list[hit.meta.id] = result
 
+    result_list = OrderedDict(
+        sorted(result_list.items(), key=lambda item: item[1]['score'], reverse=True))
+
+    slice_id, results = 0, {}
+    for result in result_list:
+        if slice_id >= start and slice_id < end:
+            results[result] = result_list[result]
+        slice_id += 1
+
     # make the result list available globally
-    gresults = result_list
+    gresults = results
 
     # get the total number of matching results
     result_num = response.hits.total
@@ -155,12 +184,12 @@ def results():
     # if we find the results, extract title and text information from doc_data, else do nothing
     if result_num > 0:
         return render_template(
-            'index.html', is_result=True, results=result_list, res_num=result_num,
-            pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query,
+            'index.html', is_result=True, results=results, res_num=result_num,
+            pages_num=int(result_num / 10 + 1), page_id=page_id, orig_query=query, category=category,
             orig_channel_title=channel_title, orig_upload_interval=upload_interval, ignored=ignored)
     else:
         return render_template(
-            'index.html', is_result=True, res_num=0, pages_num=0, page_id_id=0,
+            'index.html', is_result=True, res_num=0, pages_num=0, page_id_id=0, category=category,
             orig_query=query, orig_channel_title=channel_title, orig_upload_interval=upload_interval,
             ignored=ignored, unknown_query=unknown_query, unknown_channel_title=unknown_channel_title,
             unknown_upload_interval=unknown_upload_interval)

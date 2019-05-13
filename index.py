@@ -77,7 +77,7 @@ def buildIndex():
     channel_index.create()
 
     # Open the json channel corpus
-    with open(CHANNELS_CORPUS, 'r', encoding='utf-8') as data_file:
+    with open(CHANNELS_CORPUS_FIXED, 'r', encoding='utf-8') as data_file:
         # load channels from json file into dictionary
         channels = json.load(data_file)
 
@@ -89,7 +89,6 @@ def buildIndex():
     def actions():
         # cid is channel id (used as key into channels dictionary)
         for cid in channels:
-            print('Indexed channel - ', cid)
             yield {
                 "_index": "channel_index",
                 "_type": 'doc',
@@ -121,7 +120,7 @@ def get_categories(categories):
     cates = list()
     for category in categories:
         if 'wiki/'in category:
-            cates.append(category.split('wiki/')[1])
+            cates.append(category.split('wiki/')[1].replace('_', ' ', 10))
     return cates
 
 
