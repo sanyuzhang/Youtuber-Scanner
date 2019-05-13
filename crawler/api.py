@@ -1,6 +1,6 @@
 """
 api.py
-author: Shangyu Zhang
+author: Daneil Zhang, He Zhang, Shangyu Zhang
 """
 
 from constants import *
