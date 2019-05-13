@@ -18,29 +18,27 @@ connections.create_connection(hosts=['127.0.0.1'])
 es = Elasticsearch()
 
 # Define analyzers appropriate for your data.
-
-bigram_tokenizer = {"type": "edge_ngram",
-                    "min_gram"   : 1,
-                    "max_gram"   : 2,
-                    "token_chars": [
-                        "whitespace",
-                        "punctuation"]
-                    }
-
+bigram_tokenizer = {
+    "type": "edge_ngram",
+    "min_gram": 1,
+    "max_gram": 3,
+    "token_chars": [
+        "whitespace",
+        "punctuation"
+    ]
+}
 
 text_analyzer = analyzer(
     'custom',
     tokenizer='lowercase',
-    filter=['stop', 'asciifolding',"porter_stem"]
+    filter=['stop', 'asciifolding', "porter_stem"]
 )
 
 name_analyzer = analyzer(
     'custom',
-                       tokenizer=bigram_tokenizer,
-                       filter=['lowercase', "english_stop","porter_stem"]
+    tokenizer=bigram_tokenizer,
+    filter=['lowercase', "english_stop", "porter_stem"]
 )
-
-
 
 # Define document mapping (schema) by defining a class as a subclass of Document.
 # This defines fields and their properties (type and analysis applied).
@@ -51,10 +49,10 @@ class Channel(Document):
     channel_title = Text(analyzer=name_analyzer)
     channel_desc = Text(analyzer=text_analyzer)
 
-    all_playlists_titles = Text(analyzer=text_analyzer)
+    all_playlists_titles = Text(analyzer=name_analyzer)
     all_playlists_desc = Text(analyzer=text_analyzer)
 
-    all_videos_titles = Text(analyzer=text_analyzer)
+    all_videos_titles = Text(analyzer=name_analyzer)
     all_videos_desc = Text(analyzer=text_analyzer)
 
     upload_interval = Double()
