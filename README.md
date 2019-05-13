@@ -5,6 +5,7 @@ A search engine that helps users find the most relevant youtube creator based on
 Team member: Daniel Zhang, He Zhang, Shangyu Zhang(Team Leader)
 
 Links:
+* [Presentation0](https://docs.google.com/presentation/d/1aTelL0VpH3ryxLJ1KtqgPeXJ0-PFoh5SoMjn1s0e_q8/edit?usp=sharing)
 * [Presentation1](https://docs.google.com/presentation/d/1GX61ccG3XShJF-RaaorWcl0rJkzyEUTFnD975_GIYQk/edit?usp=sharing)
 
 ## Design
