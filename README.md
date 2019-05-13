@@ -5,6 +5,7 @@ A search engine that helps users find the most relevant youtube creator based on
 Team member: Daniel Zhang, He Zhang, Shangyu Zhang(Team Leader)
 
 Links:
+* [Presentation0](https://docs.google.com/presentation/d/1aTelL0VpH3ryxLJ1KtqgPeXJ0-PFoh5SoMjn1s0e_q8/edit?usp=sharing)
 * [Presentation1](https://docs.google.com/presentation/d/1GX61ccG3XShJF-RaaorWcl0rJkzyEUTFnD975_GIYQk/edit?usp=sharing)
 
 ## Design
@@ -17,6 +18,11 @@ The web UI will parse users' queries, then trigger correct intent, which will th
 
 Channels corpus data is too large to push to Github.
 Therefore, please download the corpus data here - https://drive.google.com/file/d/1J4YLH-R20ZAW7mTqAi7Wo7szSbhWqgZ2/view?usp=sharing
+
+However, recently, we just updated our data corpus. Please download the fixed corpus data here - https://drive.google.com/open?id=1S04TH_kIi-LbslJqfHujSAxPExWbSGiY
+
+
+Then, put it under folder `data/`.
 
 Youtuber's channels data will be composed of structured data and unstructured data like:
 ```
@@ -32,7 +38,8 @@ Youtuber's channels data will be composed of structured data and unstructured da
         "channel_id": "UC1zZE_kJ8rQHgLTVfobLi_g", 
         "channel_desc": "We make videos dedicated to exploring life through all kinds of life hacks, experiments, and random weekend projects.\n\nThere is excitement found in discovering the unknown, so join us and let\u2019s build something great together. \n\nFTC Disclaimer: We earn a % of sales made through Amazon Affiliate links", 
         "image_url": "https://yt3.ggpht.com/a/AGF-l7903sDCe8kkmFFSKhznQOho6fTemCuw_f3zHg=s88-mo-c-c0xffffffff-rj-k-no", 
-        "latest_upload_datetime": "2019-04-12", 
+        "latest_upload_datetime": "2019-04-12",
+        "like_over_dislike": 36.8,
         "upload_interval": 12.839080459770114, 
         "all_videos_desc": "Compilation Playlist: I'd drank earlier, and therefore more clear in color. In either case, I have the same success igniting tinder with either liquid lens so the difference made by the color is negligible.", 
         "channel_url": "https://www.youtube.com/channel/UC1zZE_kJ8rQHgLTVfobLi_g", 
@@ -73,8 +80,9 @@ pip3 install -r requirements.txt
 
 To run backend:
 1. Enable the correct python virtual env
-2. Start Elastic Search Server
+2. `sudo -i service elasticsearch start`
 3. `python3 index.py`
 4. `python3 main.py`
+5. Open your browser and go to http://127.0.0.1:5000
 
-A flask server will run on port 5555.
+A flask server will run on port 5000.

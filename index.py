@@ -1,9 +1,11 @@
 import json
 import re
 import time
+
+from crawler.constants import *
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
-from elasticsearch_dsl import Index, Document, Text, Keyword, Integer, Double, Date
+from elasticsearch_dsl import Index, Document, Text, Keyword, Integer, Double, Date, Long
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.analysis import tokenizer, analyzer
 from elasticsearch_dsl.query import MultiMatch, Match
@@ -43,6 +45,8 @@ name_analyzer = analyzer(
 # Define document mapping (schema) by defining a class as a subclass of Document.
 # This defines fields and their properties (type and analysis applied).
 # You can use existing es analyzers or use ones you define yourself as above.
+
+
 class Channel(Document):
     channel_title = Text(analyzer=name_analyzer)
     channel_desc = Text(analyzer=text_analyzer)
@@ -54,14 +58,16 @@ class Channel(Document):
     all_videos_desc = Text(analyzer=text_analyzer)
 
     upload_interval = Double()
-    view_count = Integer()
+    view_count = Long()
     video_count = Integer()
-    subscriber_count = Integer()
+    subscriber_count = Long()
 
     channel_create_date = Date()
     latest_upload_datetime = Date()
 
-    categories = Text(analyzer=text_analyzer)
+    categories = Text(analyzer=name_analyzer)
+    image_url = Keyword()
+    channel_url = Keyword()
 
     # override the Document save method to include subclass field definitions
     def save(self, *args, **kwargs):
@@ -83,7 +89,7 @@ def buildIndex():
     channel_index.create()
 
     # Open the json channel corpus
-    with open('data/channels.json', 'r', encoding='utf-8') as data_file:
+    with open(CHANNELS_CORPUS_FIXED, 'r', encoding='utf-8') as data_file:
         # load channels from json file into dictionary
         channels = json.load(data_file)
 
@@ -111,9 +117,23 @@ def buildIndex():
                 "subscriber_count": channels[cid]['subscriber_count'],
                 "channel_create_date": channels[cid]['channel_create_date'],
                 "latest_upload_datetime": channels[cid]['latest_upload_datetime'],
-                "categories": channels[cid]['categories']
+                "categories": get_categories(channels[cid]['categories']),
+                "channel_url": channels[cid]['channel_url'],
+                "image_url": channels[cid]['image_url']
             }
+
     helpers.bulk(es, actions())
+
+
+def get_categories(categories):
+    """
+    Parse raw category urls and return category in string array
+    """
+    cates = list()
+    for category in categories:
+        if 'wiki/'in category:
+            cates.append(category.split('wiki/')[1].replace('_', ' ', 10))
+    return cates
 
 
 # command line invocation builds index and prints the running time.
