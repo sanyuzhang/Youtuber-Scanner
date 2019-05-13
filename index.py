@@ -16,17 +16,29 @@ connections.create_connection(hosts=['127.0.0.1'])
 es = Elasticsearch()
 
 # Define analyzers appropriate for your data.
+
+bigram_tokenizer = {"type": "edge_ngram",
+                    "min_gram"   : 1,
+                    "max_gram"   : 2,
+                    "token_chars": [
+                        "whitespace",
+                        "punctuation"]
+                    }
+
+
 text_analyzer = analyzer(
     'custom',
     tokenizer='lowercase',
-    filter=['stop', 'asciifolding']
+    filter=['stop', 'asciifolding',"porter_stem"]
 )
 
 name_analyzer = analyzer(
     'custom',
-    tokenizer='standard',
-    filter=['lowercase', 'asciifolding']
+                       tokenizer=bigram_tokenizer,
+                       filter=['lowercase', "english_stop","porter_stem"]
 )
+
+
 
 # Define document mapping (schema) by defining a class as a subclass of Document.
 # This defines fields and their properties (type and analysis applied).
