@@ -89,7 +89,7 @@ def results():
         unknown_upload_interval = upload_interval
 
     # search category
-    if not_found is False and category:
+    if not_found is False and category != 'Select A Category':
         s = s.query(Q("multi_match", query=category, fields=[
                     'categories'], type='most_fields'))
 
