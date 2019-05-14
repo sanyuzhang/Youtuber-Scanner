@@ -86,39 +86,3 @@ To run backend:
 5. Open your browser and go to http://127.0.0.1:5000
 
 A flask server will run on port 5000.
-
-
-
-Examples of queries/interactions that work over the test subset
-
-
-
-Code submitted by:
-Shangyu Zhang
-
-
-Team Contributions(need edit):
-
-Daniel Zhang
-elasticsearch boosting
-feature engineering
-corpus processing
-ranking modelling
-
-He Zhang
-determination on youtuber categories
-web crawling youtubers of different categories
-development of web UI
-ranking modelling
-corpus processing
-testing
-
-
-Shangyu Zhang
-information extraction on youtubers
-elasticsearch query
-elasticsearch indexing
-development of web UI
-development of backend
-
-
